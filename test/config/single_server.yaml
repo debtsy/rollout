@@ -1,0 +1,18 @@
+
+hosts:
+    app1:
+        username: ubuntu
+        host: ec2-1-1-1-1.us-west-2.compute.amazonaws.com
+        key_file: /home/ubuntu/keys/mykey.pem
+
+
+services:
+    www:
+        default: true
+        deploy:
+            script:
+                cd www && git pull
+                sudo systemctl restart www
+                sleep 1
+                curl localhost:8000/health
+
