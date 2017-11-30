@@ -2,20 +2,24 @@ from rollout import rule
 
 
 class Rule:
-    def __init__(self, name, command, sudo=False, before=None, after=None, unless=None):
+    def __init__(self, name, command, sudo=False, before=None, after=None, unless=None, required=True):
         self.command = command
         self.before = before
         self.after = after
         self.name = name
         self.unless = unless
         self.sudo = sudo
+        self.required = required
 
-    def should_run(self, connection):
+    def should_run(self, connection) -> bool:
+        if not self.required:
+            return False
+
         if self.unless:
             result = connection.run(self.unless)
             return result != 0
-        else:
-            return True
+
+        return True
 
     def execute(self, connection):
         self.cold_run(connection)
@@ -29,12 +33,15 @@ class Rule:
 
 
 class CopyRule(Rule):
-    def __init__(self, name, obj, target, sudo=False, before=None, after=None):
+    def __init__(self, name, obj, target, **kwargs):
         self.obj = obj
         self.target = target
-        super().__init__(name, None, sudo=sudo, before=before, after=after)
+        super().__init__(name, None, **kwargs)
 
     def should_run(self, connection):
+        if not self.required:
+            return False
+
         fo = connection.get(self.target)
         if fo is None:
             return True

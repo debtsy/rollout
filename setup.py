@@ -1,4 +1,11 @@
 from setuptools import setup
+import unittest
+
+
+def my_test_suite():
+    test_loader = unittest.TestLoader()
+    test_suite = test_loader.discover('test', pattern='test_*.py')
+    return test_suite
 
 
 setup(name='rollout',
@@ -15,10 +22,10 @@ setup(name='rollout',
               'rollout=rollout.cli:main',
           ],
       },
+      test_suite='setup.my_test_suite',
       install_requires=[
           "boto3",
           "paramiko",
-          "scp",
           "PyYAML",
       ],
-)
+      )
