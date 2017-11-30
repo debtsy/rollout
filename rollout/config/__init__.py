@@ -51,7 +51,9 @@ def load_directory(path: Path) -> OrderedDict:
         if p.stem in config:
             raise ValueError(f'Trying to load file {p}, but key {p.stem} already exists.')
         if p.is_dir():
-            config[p.stem] = load_directory(p)
+            conf = load_directory(p)
+            if conf:
+                config[p.stem] = conf
         else:
             conf = load_file(p)
             if conf is not None:

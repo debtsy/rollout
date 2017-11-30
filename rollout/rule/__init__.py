@@ -34,3 +34,7 @@ def git(name, target=None, repo=None, **kwargs):
     if target is None:
         target = name
     return Rule(name, f'git clone "{repo}" "{target}"', unless=f'test -d "{target}"', **kwargs)
+
+
+def shell(name, script, **kwargs):
+    return Rule(name, script, **kwargs)

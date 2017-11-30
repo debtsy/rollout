@@ -2,10 +2,10 @@ from rollout import rule
 
 
 class Rule:
-    def __init__(self, name, command, sudo=False, before=None, after=None, unless=None, required=True):
+    def __init__(self, name, command, sudo=False, requires=None, and_then=None, unless=None, required=True):
         self.command = command
-        self.before = before
-        self.after = after
+        self.before = and_then
+        self.after = requires
         self.name = name
         self.unless = unless
         self.sudo = sudo
@@ -71,7 +71,11 @@ def get_rule_factory(rule_dict):
 
 
 def make_rule(rule_name, rule_dict, config) -> Rule:
-    rule_factory, args = get_rule_factory(rule_dict)
+    try:
+        rule_factory, args = get_rule_factory(rule_dict)
+    except Exception as e:
+        print(f'Failed to create rule for {rule_name}')
+        raise e
     # rule.file needs some config.context.
     if rule_factory == rule.file:
         args['template_or_source_root'] = config['__filepath']
