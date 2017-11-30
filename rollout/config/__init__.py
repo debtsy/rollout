@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 import yaml
 from collections import OrderedDict
-from typing import Optional
+from typing import Optional, Tuple
 
 
 def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
@@ -48,7 +48,6 @@ def load_file(path: Path) -> Optional[OrderedDict]:
 def load_directory(path: Path) -> OrderedDict:
     config = OrderedDict()
     for p in sorted(path.iterdir()):
-        print(p.stem, list(config.keys()))
         if p.stem in config:
             raise ValueError(f'Trying to load file {p}, but key {p.stem} already exists.')
         if p.is_dir():
@@ -84,7 +83,7 @@ def is_rollout_directory(path: Path) -> Optional[Path]:
     return None
 
 
-def discover_config(path: str):
+def discover_config(path: str) -> OrderedDict:
     if path is None:
         check_dir = Path.cwd()
     else:
@@ -93,7 +92,9 @@ def discover_config(path: str):
     while check_dir != check_dir.parent:
         config_path = is_rollout_directory(check_dir)
         if config_path:
-            return load_directory_or_file(config_path)
+            config = load_directory_or_file(config_path)
+            config['__filepath'] = config_path
+            return config
         check_dir = check_dir.parent
 
 

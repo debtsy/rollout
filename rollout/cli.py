@@ -1,7 +1,7 @@
 import argparse
 
-from rollout import deploy, create, config
-from rollout.config import discover_config
+from rollout.command import deploy, provision
+from rollout import config
 
 
 def command(subparsers, name, function, aliases=None):
@@ -15,6 +15,8 @@ def main(params=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--version', '-v', action='store_true')
     parser.add_argument('--config', '-c', nargs='?')
+    parser.add_argument('--cold-run', '-C', action='store_true')
+    parser.add_argument('--force', '-f', action='store_true')
 
     subparsers = parser.add_subparsers(help='commands')
 
@@ -23,10 +25,12 @@ def main(params=None):
     deploy_parser = command(subparsers, 'deploy', deploy.deploy, aliases=['d'])
 
     ssh = command(subparsers, 'ssh', deploy.ssh)
+    ssh.add_argument('host')
 
-    create_parser = command(subparsers, 'create', create.create)
+    command(subparsers, 'provision', provision.provision)
+    # create_parser = command(subparsers, 'create', create.create)
 
-    destroy = command(subparsers, 'destroy', create.destroy)
+    # destroy = command(subparsers, 'destroy', create.destroy)
 
     args = parser.parse_args(params)
 
@@ -38,6 +42,6 @@ def main(params=None):
     if not args.command:
         return parser.print_help()
 
-    conf = discover_config(args.config)
+    conf = config.discover_config(args.config)
 
     args.command(args, conf)
