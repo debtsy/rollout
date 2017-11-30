@@ -23,6 +23,7 @@ def main(params=None):
     config_parser = command(subparsers, 'config', config.display)
 
     deploy_parser = command(subparsers, 'deploy', deploy.deploy, aliases=['d'])
+    command(subparsers, 'status', deploy.status)
 
     ssh = command(subparsers, 'ssh', deploy.ssh)
     ssh.add_argument('host')
@@ -44,4 +45,6 @@ def main(params=None):
 
     conf = config.discover_config(args.config)
 
+    if conf is None:
+        raise ValueError('Could not locate rollout config. Are you in the wrong directory?')
     args.command(args, conf)
