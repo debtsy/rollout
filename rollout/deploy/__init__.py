@@ -1,5 +1,8 @@
 import paramiko
 import logging
+from scp import SCPClient
+import os
+
 
 logger = logging.getLogger('deploy')
 logger.addHandler(logging.StreamHandler())
@@ -16,16 +19,15 @@ def get_service_name(args, config):
             return name
 
 
-
-def connect(client, host):
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy()) 
-    client.load_system_host_keys()
-    hostpath = host.get('host')
-    key_file = host.get('key_file')
-    username = host.get('username')
-    logger.debug('Attempting to connect. host=%s key=%s user=%s', hostpath, key_file, username)
-    client.connect(hostpath, username=username, key_filename=key_file)
-    return client
+def provision(args, config):
+    for name, host in config.get('hosts').items():
+        client = paramiko.SSHClient()
+        connect(client, host)
+        # something like this...
+        scp = SCPClient(client.get_transport())
+        # scp.put('systemd')
+        line = 'sudo systemctl enable debtsy.co.service'
+        stdin, stdout, stderr = client.exec_command(line, get_pty=True)
 
 
 def deploy(args, config):
@@ -53,3 +55,9 @@ def deploy(args, config):
                 print(e.decode('utf8'))
 
         client.close()
+
+
+def ssh(args, config):
+    hosts = config.get('hosts').items()
+    name, host = next(iter(hosts))
+    os.system('ssh -i {key_file} {username}@{host}'.format(**host))

@@ -1,18 +1,32 @@
 import argparse
-from rollout.util import discover_config
-from rollout.deploy import deploy
+
+from rollout import deploy, create, config
+from rollout.config import discover_config
+
+
+def command(subparsers, name, function, aliases=None):
+    parser = subparsers.add_parser(name, help=name, aliases=aliases or [])
+    parser.set_defaults(command=function)
+    parser.add_argument('service', nargs='?')
+    return parser
 
 
 def main(params=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--version', '-v', action='store_true')
-    parser.add_argument('--config', '-c', default='rollout.yaml')
+    parser.add_argument('--config', '-c', nargs='?')
 
     subparsers = parser.add_subparsers(help='commands')
 
-    deploy_parser = subparsers.add_parser('deploy', help='deploy', aliases=['d'])
-    deploy_parser.set_defaults(command=deploy)
-    deploy_parser.add_argument('service', nargs='?')
+    config_parser = command(subparsers, 'config', config.display)
+
+    deploy_parser = command(subparsers, 'deploy', deploy.deploy, aliases=['d'])
+
+    ssh = command(subparsers, 'ssh', deploy.ssh)
+
+    create_parser = command(subparsers, 'create', create.create)
+
+    destroy = command(subparsers, 'destroy', create.destroy)
 
     args = parser.parse_args(params)
 
@@ -24,6 +38,6 @@ def main(params=None):
     if not args.command:
         return parser.print_help()
 
-    config = discover_config(args.config)
+    conf = discover_config(args.config)
 
-    args.command(args, config)
+    args.command(args, conf)

@@ -15,4 +15,10 @@ setup(name='rollout',
               'rollout=rollout.cli:main',
           ],
       },
+      install_requires=[
+          "boto3",
+          "paramiko",
+          "scp",
+          "PyYAML",
+      ],
 )
