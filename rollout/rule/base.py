@@ -2,9 +2,9 @@ from rollout import rule
 
 
 class Rule:
-    def __init__(self, name, command, sudo=False, requires=None, and_then=None, unless=None, required=True):
+    def __init__(self, name, command, sudo=False, requires=None, afterward=None, unless=None, required=True):
         self.command = command
-        self.before = and_then
+        self.before = afterward
         self.after = requires
         self.name = name
         self.unless = unless

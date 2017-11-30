@@ -22,14 +22,6 @@ def gather_rules_for_roles(roles, config) -> List[Rule]:
             rules.append(rule)
 
     rules = rule_toposort(rules)
-    dependency = {rule.name: rule for rule in rules}
-    for r in rules:
-        if r.after:
-            for after_key in r.after:
-                dependency[after_key].required = True
-        if r.before and r.required:
-            for before_key in r.before:
-                dependency[before_key].required = True
     return rules
 
 
@@ -43,6 +35,7 @@ def provision(args, config):
         client = connect.connect(host)
 
         print('Running on host %s: %s' % (name, host.get('host')))
+        dependency = {rule.name: rule for rule in rules}
         for rule in rules:
             if not args.force and not rule.should_run(client):
                 continue
@@ -50,5 +43,9 @@ def provision(args, config):
                 rule.cold_run(client)
             else:
                 rule.execute(client)
+            if rule.before:
+                for before_key in rule.before:
+                    dependency[before_key].required = True
 
+            # TODO should also check for rule.after too
         client.close()
