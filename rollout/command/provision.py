@@ -9,7 +9,8 @@ from rollout.lib.toposort import rule_toposort
 def get_roles_for_host(host, config) -> list:
     roles = set()
     for service in config['services'].values():
-        roles.update(service['roles'])
+        if host in service['hosts']:
+            roles.update(service['roles'])
     return sorted(list(roles))
 
 
@@ -26,15 +27,12 @@ def gather_rules_for_roles(roles, config) -> List[Rule]:
 
 
 def provision(args, config):
-
     for name, host in config.get('hosts').items():
         roles = get_roles_for_host(name, config)
-
         rules = gather_rules_for_roles(roles, config)
 
         client = connect.connect(host)
-
-        print('Running on host %s: %s' % (name, host.get('host')))
+        print('%s on host %s: %s' % ('Cold run' if args.cold_run else 'Running', name, host.get('host')))
         dependency = {rule.name: rule for rule in rules}
         for rule in rules:
             if not args.force and not rule.should_run(client):
