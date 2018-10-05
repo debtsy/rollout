@@ -27,5 +27,6 @@ setup(name='rollout',
           "boto3",
           "paramiko",
           "PyYAML",
+          "Jinja2",
       ],
       )

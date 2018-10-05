@@ -1,12 +1,8 @@
 # Rollout
-o
 
-    asdklfj
+# Getting Started
 
-# Development
-
-    python3 setup.py install  # installs dependencies
-    python3 setup.py develop  # installs live version for editing
+    python3 setup.py develop
 
 # Tasks
 
