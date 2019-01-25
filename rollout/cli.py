@@ -40,7 +40,8 @@ def main(params=None):
         print(pkg_resources.get_distribution('rollout').version)
         return
 
-    if not args.command:
+    # if no command is passed, the args.command attribute doesn't exist.
+    if not getattr(args, 'command', None):
         return parser.print_help()
 
     conf = config.discover_config(args.config)
