@@ -1,4 +1,5 @@
-from setuptools import setup
+from setuptools import setup, find_packages
+
 import unittest
 
 
@@ -15,7 +16,7 @@ setup(name='rollout',
       author='Kurt Spindler',
       author_email='kespindler@gmail.com',
       license='MIT',
-      packages=['rollout'],
+      packages=find_packages(),
       zip_safe=False,
       entry_points={
           'console_scripts': [
