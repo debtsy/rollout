@@ -10,7 +10,7 @@ def perform_notifications(conf, message):
     slack_conf = conf.get('notifications', {}).get('slack', None)
     if slack_conf is None:
         return
-    sc = SlackClient(slack_conf['api_config'])
+    sc = SlackClient(slack_conf['api_token'])
     sc.api_call(
         "chat.postMessage",
         channel=slack_conf['channel'],

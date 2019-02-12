@@ -10,7 +10,7 @@ def my_test_suite():
 
 
 setup(name='rollout',
-    version='0.2.0',
+    version='0.2.1',
     description='deployment tool',
     url='http://github.com/kespindler/rollout',
     author='Kurt Spindler',
