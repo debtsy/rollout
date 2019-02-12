@@ -43,7 +43,7 @@ class Connection:
             command = 'sudo ' + command
         if directory:
             command = f'cd "{directory}";' + command
-        stdin, stdout, stderr = self.client.exec_command(command, get_pty=True)
+        stdin, stdout, stderr = self.client.exec_command(command)
         e = stderr.read()
         if e:
             print(e.decode('utf8'))
