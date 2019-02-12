@@ -1,1 +1,5 @@
 rollout.egg-info/
+.eggs
+build
+dist
+src
