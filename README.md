@@ -2,6 +2,12 @@
 
 # Getting Started
 
+    /usr/local/bin/pip3 -q install -e "git+git@github.com:kespindler/rollout.git#egg=rollout"
+
+# Development
+
+If you want to develop it, replace the above install with:
+
     python3 setup.py develop
 
 # Tasks
