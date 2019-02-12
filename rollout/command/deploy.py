@@ -10,10 +10,7 @@ def perform_notifications(conf, message):
     slack_conf = conf.get('notifications', {}).get('slack', None)
     if slack_conf is None:
         return
-    sc = SlackClient(
-        client_id=slack_conf['client_id'],
-        client_secret=slack_conf['client_secret'],
-    )
+    sc = SlackClient(slack_conf['api_config'])
     sc.api_call(
         "chat.postMessage",
         channel=slack_conf['channel'],
@@ -53,8 +50,8 @@ def deploy(args, config):
             print(stdout)
         client.close()
 
-    if not_log_changes:
-        message = 'No changes found.'
+    if not log_changes:
+        log_changes = 'No changes found.'
     message = 'Deploying changes to hosts: ' + ','.join(deploy_hosts)
     message += '\n' + log_changes
     perform_notifications(config, message)
