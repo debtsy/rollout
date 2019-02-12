@@ -77,10 +77,10 @@ def status(args, config):
             if hostname not in service['hosts']:
                 continue
 
-            hash = client.run('git rev-parse --short HEAD', directory=service['deploy']['script_dir'], capture=True)
+            hash = client.run('git rev-parse --short=8 HEAD', directory=service['deploy']['script_dir'], capture=True)
             service_status[service_name].append((hostname, hash))
 
-    proc = sub.Popen('git rev-parse --short origin/master', stdout=sub.PIPE, shell=True)
+    proc = sub.Popen('git rev-parse --short=8 origin/master', stdout=sub.PIPE, shell=True)
     hash, _ = proc.communicate()
     hash = hash.decode('utf8').strip()
     proc = sub.Popen('git remote get-url origin', stdout=sub.PIPE, shell=True)
