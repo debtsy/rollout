@@ -39,14 +39,15 @@ def deploy(args, config):
 
         script = deploy.get('script').splitlines()
         directory = deploy.get('script_dir')
+        user = deploy.get('user')
 
         print('Running on host %s: %s' % (name, host.get('host')))
         if not log_changes:
-            client.run('git fetch', directory=directory)
-            log_changes = client.run('git log master..origin/master', directory=directory, capture=True)
+            client.run('git fetch', directory=directory, sudo=True, user=user)
+            log_changes = client.run('git log master..origin/master', directory=directory, capture=True, sudo=True, user=user)
         for line in script:
             print(line)
-            stdout = client.run(line, directory=directory, capture=True)
+            stdout = client.run(line, directory=directory, capture=True, sudo=True, user=user)
             print(stdout)
         client.close()
 
@@ -77,7 +78,7 @@ def status(args, config):
             if hostname not in service['hosts']:
                 continue
 
-            hash = client.run('git rev-parse --short=8 HEAD', directory=service['deploy']['script_dir'], capture=True)
+            hash = client.run('git rev-parse --short=8 HEAD', directory=service['deploy']['script_dir'], capture=True, sudo=True, user=user)
             service_status[service_name].append((hostname, hash))
 
     proc = sub.Popen('git rev-parse --short=8 origin/master', stdout=sub.PIPE, shell=True)
