@@ -38,7 +38,9 @@ class Connection:
         except FileNotFoundError:
             pass
 
-    def run(self, command, capture=False, directory=None, sudo=False):
+    def run(self, command, capture=False, directory=None, sudo=False, user=None):
+        if user:
+            command = f"su {user} -c '{command}'"
         if sudo:
             command = 'sudo ' + command
         if directory:
