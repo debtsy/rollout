@@ -12,7 +12,7 @@ def my_test_suite():
 setup(name='rollout',
     version='0.2.3',
     description='deployment tool',
-    url='http://github.com/kespindler/rollout',
+    url='http://github.com/debtsy/rollout',
     author='Kurt Spindler',
     author_email='kespindler@gmail.com',
     license='MIT',
