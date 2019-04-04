@@ -2,7 +2,7 @@
 
 # Getting Started
 
-    /usr/local/bin/pip3 -q install -e "git+git@github.com:kespindler/rollout.git#egg=rollout"
+    /usr/local/bin/pip3 -q install -e "git+git@github.com:debtsy/rollout.git#egg=rollout"
 
 # Development
 
