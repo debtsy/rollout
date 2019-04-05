@@ -2,6 +2,7 @@ from pathlib import Path
 import paramiko
 import logging
 import io
+import os
 
 
 logger = logging.getLogger('deploy')
@@ -10,11 +11,11 @@ logger.setLevel(logging.DEBUG)
 
 
 class Connection:
-    def __init__(self, host, username, key_filename):
+    def __init__(self, hostpath, username, key_file):
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.client.load_system_host_keys()
-        self.client.connect(host, username=username, key_filename=key_filename)
+        self.client.connect(hostpath, username=username, key_filename=key_file)
         self.sftp_client = self.client.open_sftp()
 
     def put(self, obj, path, sudo=False):
@@ -62,12 +63,45 @@ class Connection:
         return self.client.close()
 
 
+def _user_config(host):
+    """Given the host address, attempts to expand the user's configured
+    username and keyfile as listed in their ~/.ssh/config
+    """
+    config = paramiko.SSHConfig()
+    user = os.path.expanduser("~/.ssh/config")
+    if os.path.exists(user):
+        with open(user) as f:
+            config.parse(f)
+
+    cfg = config.lookup(host)
+
+    key_files = cfg.get('identityfile')
+    username = cfg.get('user')
+
+    return {'username': username, 'key_file': key_files}
+
+def ssh_config(host):
+    """Given a host entry in the yaml config, combine the connection details
+    from the user's personal ~/.ssh/config and the config definition,
+    preferring the former when available.
+    """
+    hostpath = host.get('host')
+    user = _user_config(hostpath)
+
+    key_file = user.get('key_file') or host.get('key_file')
+    username = user.get('username') or host.get('username')
+    return {'hostpath': hostpath, 'key_file': key_file, 'username': username}
+
+
 def connect(host):
+    """Establish a persistent SSH connection suitable for running commands
+    on the host system.
+    """
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     client.load_system_host_keys()
-    hostpath = host.get('host')
-    key_file = host.get('key_file')
-    username = host.get('username')
-    logger.debug('Attempting to connect. host=%s key=%s user=%s', hostpath, key_file, username)
-    return Connection(host=host['host'], key_filename=host['key_file'], username=host['username'])
+
+    cfg = ssh_config(host)
+    logger.debug('Attempting to connect. host={hostpath} key={key_file} user={username}'.format(**cfg))
+
+    return Connection(**cfg)

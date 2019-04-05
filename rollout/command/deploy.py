@@ -60,7 +60,8 @@ def deploy(args, config):
 
 def ssh(args, config):
     host = config['hosts'][args.host]
-    os.system('ssh -i {key_file} {username}@{host}'.format(**host))
+    cfg = connect.ssh_config(host)
+    os.system('ssh -i {key_file} {username}@{hostpath}'.format(**cfg))
 
 
 def status(args, config):
