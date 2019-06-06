@@ -29,6 +29,6 @@ setup(name='rollout',
         "paramiko",
         "PyYAML",
         "Jinja2",
-        "slackclient",
+        "slackclient<=2.0.0",
     ],
 )
